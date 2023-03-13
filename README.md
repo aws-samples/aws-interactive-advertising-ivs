@@ -240,11 +240,54 @@ This function need also the following environmental variables - more information
 
 Then, as fully described in the [AWS Blog Post](https://aws.amazon.com/blogs/) you will need to add triggers for this lambda based on Amazon Simple Storage Service actions.
 
+In this Lambda function, we have a trigger from Amazon S3 for each image created by IVS.
+The Lambda function calls Rekognition’s API for custom label detection, and if we have a match and there is no current overlay on video and after a period of time), the function calls IVS’s PutMetadata API to have the client render the product information on the screen.
+
+The PutMetadata API call to trigger the production information looks like:
+
+metadata_response = metadata_insert.put_metadata(
+channelArn=channel_arn,
+metadata='{\"type\": \"product\",\"image\": \"url of our preview image\",\"qr\": \"Url of our Qr Code\","title\": \"Your Title\",\"description\": \"Your description \",\"price\": \"your price \"}‘
+)
+
+
 ### Static Component
 
 As the last step, you will need to deploy a front end solution with a webplayer to be able to see the video streaming from Amazon Interactive Video Service and to visualize the correct Metadata.
 
 This repository contains also a simple HTML page, with CSS and Javascript files: [src/web/](https://github.com/aws-samples/aws-interactive-advertising-ivs/tree/main/src/web).
+
+In the Repo you can find an html page a .css stylesheet and a .js file, which can be used as a sample IVS player.
+You can use Codepen.io to start with and modify the files or you can download the files and host them on your web site.
+I recommend using Amazon CloudFront CDN in order to protect your origin and better distribute the load give to your viewers the best performance and latency.
+
+We have already seen the variables for PutMetadata in the Lambda function, and the same variables are mapped in the .js file and .css for the style:
+
+\Code from script.js:
+
+const productEl = document.getElementById("product");
+const productImageEl = document.getElementById("product__img");
+const productQrEl = document.getElementById("product__qr");
+const productTitleEl = document.getElementById("product__title");
+const productPriceEl = document.getElementById("product__price");
+const productDescriptionEl = document.getElementById("product__description");
+and 
+let showProduct = (metadata) => {
+    productEl.classList.remove("hidden");
+    productEl.classList.add("opacity__in");
+
+    productImageEl.src = metadata.image;
+    productQrEl.src = metadata.qr;
+    productTitleEl.textContent = metadata.title;
+    productDescriptionEl.textContent = metadata.description;
+    productPriceEl.textContent = metadata.price;
+  };
+  
+You can modify these values in accordance with the Lambda parameters.
+
+The variable qr require a previous availability of 2 (or more) qr code.jpg that point to the products to be shown.
+
+
 
 ## Results
 
