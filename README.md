@@ -41,17 +41,46 @@ This README is not meant to be the full implementation guide. Indeed, all the de
 
 ### Create Amazon Rekognition Custom Label
 
-As a first step you will need to create a Custom Label with Amazon Rekognition in the same region where you will create your Amazon Interactive Video Service channel.
+The first step is to create a Custom Label with Amazon Rekognition in the same region where you will create your Amazon Interactive Video Service channel.
+You can follow along with the following video below for creating the model, or refer to the following [article](https://docs.aws.amazon.com/rekognition/latest/customlabels-dg/getting-started.html).
+You have to insert some logo images of your products as a training set and assign them a label, and some images of the products themselves as a test set, marking them with bounding boxes.
+You can find some sample images in Rekognition_Custom_Label folder and the video example [here](https://github.com/aws-samples/aws-interactive-advertising-ivs/blob/main/media/customlabel.mp4)
 
 
 ### Create Amazon Interactive Video Service channel
 
 Then you will need to create and configure an Amazon Interactive Video Service channel, providing also an Amazon Simple Storage Service bucket for storage purpuses.
+First you need to create a recording configuration to store images from IVS streaming.
+You can create it under console in IVS services and choosing Recording configuration in the left menu. Give a configuration name and choose or create a new bucket in the same region of your channel, and choose target thumbnail interval to 5 seconds.
+Leave other fields as default and click on Create recording configuration.
+Follow the steps in [Getting Started with Amazon IVS](https://docs.aws.amazon.com/ivs/latest/userguide/getting-started.html) in the Amazon IVS User Guide to create a new channel.
+When you create an Amazon IVS channel, you get an ingest server and stream key. You use these to set up streaming. (You also get a Playback URL, to use later to play back your stream.)
+The Getting Started document also describes OBS Studio setup, specifically a setup using the OBS auto-configuration wizard. You can find a OBS configuration example in this [blog](https://aws.amazon.com/blogs/media/setting-up-for-streaming-with-amazon-ivs/). Alternatively, you can also use your browser to [stream directly to IVS.](https://aws.amazon.com/blogs/media/broadcast-from-a-browser-with-the-amazon-ivs-web-broadcast-sdk/) 
+
  
 
 ### Create DynamoDB table
 
-To track the recognized objects status - visualized or not - you will need to create a DynamoDB Table
+We will now create our DynamoDB table which will contain the display status of our objects to be recognized.
+
+Open the DynamoDB service console, expand the left-side menu, select Tables and click Create table:
+•	Enter a Table name. This name will be referenced in the ivs-lambda-process Lambda function
+•	For partition key, enter “Id” and a type of “String”.
+•	Click Create to create the table.
+
+![Create Table](./media/dynamo_1.png)
+
+Open the Table under Explore Items and select Create Item.
+
+We need to insert Items in our Table. For this solutions we insert 1 Item for the first object trained in Custom Label (AWS in our demo) and second Item for the second object trained in Custom Label (Twitch in our Demo).
+For each Item we need to create the value:
+•	productlive with value 0  
+•	stepalreadydone with value 0
+•	ttlexpired with value 0
+The result should be like the image below:
+
+![Items](./media/dynamo_2.png)
+
 
 ### Create Lambda function for clear text message and TTL expired
 
