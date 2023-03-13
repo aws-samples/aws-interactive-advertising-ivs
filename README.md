@@ -265,23 +265,25 @@ We have already seen the variables for PutMetadata in the Lambda function, and t
 
 \Code from script.js:
 
-const productEl = document.getElementById("product");
-const productImageEl = document.getElementById("product__img");
-const productQrEl = document.getElementById("product__qr");
-const productTitleEl = document.getElementById("product__title");
-const productPriceEl = document.getElementById("product__price");
-const productDescriptionEl = document.getElementById("product__description");
-and 
-let showProduct = (metadata) => {
-    productEl.classList.remove("hidden");
-    productEl.classList.add("opacity__in");
+    const productEl = document.getElementById("product");
+    const productImageEl = document.getElementById("product__img");
+    const productQrEl = document.getElementById("product__qr");
+    const productTitleEl = document.getElementById("product__title");
+    const productPriceEl = document.getElementById("product__price");
+    const productDescriptionEl = document.getElementById("product__description");
 
-    productImageEl.src = metadata.image;
-    productQrEl.src = metadata.qr;
-    productTitleEl.textContent = metadata.title;
-    productDescriptionEl.textContent = metadata.description;
-    productPriceEl.textContent = metadata.price;
-  };
+and 
+
+    let showProduct = (metadata) => {
+        productEl.classList.remove("hidden");
+        productEl.classList.add("opacity__in");
+
+        productImageEl.src = metadata.image;
+        productQrEl.src = metadata.qr;
+        productTitleEl.textContent = metadata.title;
+        productDescriptionEl.textContent = metadata.description;
+        productPriceEl.textContent = metadata.price;
+    };
   
 You can modify these values in accordance with the Lambda parameters.
 
